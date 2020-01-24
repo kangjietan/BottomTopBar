@@ -9,7 +9,11 @@ class App extends React.Component {
 
   render() {
     return (
-      <div>Hello</div>
+      <div className="playback-bar">
+        <audio controls>
+
+        </audio>
+      </div>
     );
   }
 }
