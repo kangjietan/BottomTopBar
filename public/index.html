@@ -6,14 +6,39 @@
   <title>Bottom Audio Player</title>
   <style>
     .playback-bar {
-      border: 1px solid black;
+      height: 48px;
+      left: 0;
+      right: 0;
+      top: -1;
+      bottom: 0;
+      width: 100%;
+      visibility: hidden;
+      position: fixed;
+      margin: auto;
+      z-index: -1;
     }
+
+    .playback-background {
+      border-top: 1px solid #cecece;
+      background-color: #f2f2f2;
+      position: absolute;
+      visibility: visible;
+      z-index: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .buttons {
+      position: absolute;
+      visibility: visible;
+      z-index: 1;
+    }
+
   </style>
 </head>
 <body>
-  <div id="app">
-
-  </div>
+  <div id="app"></div>
   <script src="bundle.js"></script>
 </body>
 </html>
