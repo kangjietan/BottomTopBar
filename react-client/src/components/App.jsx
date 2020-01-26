@@ -10,9 +10,12 @@ class App extends React.Component {
   render() {
     return (
       <div className="playback-bar">
-        <audio controls>
-
-        </audio>
+        <section className="player">
+          <div className="buttons">
+            <button>Go</button>
+          </div>
+          <div className="playback-background"></div>
+        </section>
       </div>
     );
   }
