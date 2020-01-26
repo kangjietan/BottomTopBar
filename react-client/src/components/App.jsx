@@ -11,14 +11,14 @@ class App extends React.Component {
     return (
       <div className="playback-bar">
         <section className="player">
-          <div className="buttons">
+          <div className="playback-background" />
+          <div className="playcontrol-buttons">
             <button id="back" type="button"/>
             <button id="play" type="button"/>
             <button id="forward" type="button"/>
             <button id="shuffle" type="button"/>
             <button id="repeat" type="button"/>
           </div>
-          <div className="playback-background"></div>
         </section>
       </div>
     );
