@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
+// Buttons
 const Button = styled.button`
   position: relative;
   visibility: visible;
@@ -27,6 +28,19 @@ const Shuffle = styled(Button)`
 `;
 const Repeat = styled(Button)`
   background-image: url("buttons/repeat_none.svg");
+  margin-right: 20px;
+`;
+
+// Timestamps
+const Time = styled.div`
+  width: 50px;
+  height: 46px;
+  line-height: 46px;
+`;
+
+const Start = styled(Time)`
+  text-align: right;
+  color: #f50;
 `;
 
 class App extends React.Component {
@@ -65,7 +79,7 @@ class App extends React.Component {
             <Shuffle />
             <Repeat />
             <div className="progress">
-              <div>Current Time</div>
+              <Start>0:00</Start>
             </div>
           </div>
         </section>
