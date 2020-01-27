@@ -6,6 +6,7 @@ const Button = styled.button`
   visibility: visible;
   background-repeat: no-repeat;
   background-position: 40%;
+  background-color: transparent;
   width: 24px;
   height: 100%;
   margin: 0 0 0 12px;
