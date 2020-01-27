@@ -33,7 +33,21 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {}
+    this.state = {
+      song: '', // song url to load as audio source
+      image: '', // song image to load as img
+    };
+  }
+
+  // Initial call to load player with song and queue with songs
+  componentDidMount() {
+    // If my component needed to add songs
+    // Make get request to server
+    // load app with songs data that includes
+    // link to Amazon S3 where the images and actual song will be served
+
+    // User interacts with songs that are already stored on the app
+    // When they play/pause, skip, go back, etc...
   }
 
   render() {
@@ -42,7 +56,7 @@ class App extends React.Component {
         <section className="player">
           <div className="playback-background" />
           <div className="playcontrol-buttons">
-            <Back onClick={()=>{console.log('It works')}}/>
+            <Back onClick={() => { console.log('It works'); }} />
             <Play />
             <Forward />
             <Shuffle />
