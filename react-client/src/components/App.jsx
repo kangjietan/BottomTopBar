@@ -6,6 +6,7 @@ const Button = styled.button`
   visibility: visible;
   background-repeat: no-repeat;
   background-position: 40%;
+  background-color: transparent;
   width: 24px;
   height: 100%;
   margin: 0 0 0 12px;
@@ -32,7 +33,24 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {}
+    this.state = {
+      song: '', // song url to load as audio source
+      image: '', // song image to load as img
+    };
+  }
+
+  // Initial call to load player with song and queue with songs.
+  // Default behavior of component based on SoundClound does not
+  // load queue with songs nor does the player have a song loaded initially.
+  // Songs only get added to the queue when user adds them.
+  componentDidMount() {
+    // If my component needed to add songs
+    // Make get request to server
+    // load app with songs data that includes
+    // link to Amazon S3 where the images and actual song will be served
+
+    // User interacts with songs that are already stored on the app
+    // When they play/pause, skip, go back, etc...
   }
 
   render() {
@@ -41,7 +59,7 @@ class App extends React.Component {
         <section className="player">
           <div className="playback-background" />
           <div className="playcontrol-buttons">
-            <Back onClick={()=>{console.log('It works')}}/>
+            <Back onClick={() => { console.log('It works'); }} />
             <Play />
             <Forward />
             <Shuffle />
