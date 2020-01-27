@@ -13,11 +13,11 @@ class App extends React.Component {
         <section className="player">
           <div className="playback-background" />
           <div className="playcontrol-buttons">
-            <button id="back" type="button"/>
-            <button id="play" type="button"/>
-            <button id="forward" type="button"/>
-            <button id="shuffle" type="button"/>
-            <button id="repeat" type="button"/>
+            <button id="back" type="button" aria-label="back"/>
+            <button id="play" type="button" aria-label="play"/>
+            <button id="forward" type="button" aria-label="forward"/>
+            <button id="shuffle" type="button" aria-label="shuffle"/>
+            <button id="repeat" type="button" aria-label="repeat"/>
           </div>
         </section>
       </div>
