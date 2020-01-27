@@ -9,7 +9,6 @@
       height: 48px;
       left: 0;
       right: 0;
-      top: -1;
       bottom: 0;
       width: 100%;
       visibility: hidden;
@@ -29,12 +28,74 @@
       height: 100%;
     }
 
-    .buttons {
+    .playcontrol-buttons {
+      display: flex;
+      height: 100%;
       position: absolute;
-      visibility: visible;
       z-index: 1;
+      border-top: 1px solid #cecece;
     }
 
+    #back {
+      position: relative;
+      visibility: visible;
+      background-image: url("buttons/back.svg");
+      background-repeat: no-repeat;
+      background-position: 40%;
+      width: 24px;
+      height: 100%;
+      margin: 0 0 0 12px;
+      border: 0;
+    }
+
+    #play {
+      position: relative;
+      visibility: visible;
+      background-image: url("buttons/play.svg");
+      background-repeat: no-repeat;
+      background-position: 40%;
+      width: 24px;
+      height: 100%;
+      margin: 0 0 0 12px;
+      border: 0;
+    }
+
+    #forward {
+      position: relative;
+      visibility: visible;
+      background-image: url("buttons/forward.svg");
+      background-repeat: no-repeat;
+      background-position: 40%;
+      width: 24px;
+      height: 100%;
+      margin: 0 0 0 12px;
+      border: 0;
+    }
+
+    #shuffle {
+      position: relative;
+      visibility: visible;
+      background-image: url("buttons/shuffle_black.svg");
+      background-repeat: no-repeat;
+      background-position: 40%;
+      width: 24px;
+      height: 100%;
+      margin: 0 0 0 12px;
+      border: 0;
+    }
+
+    #repeat {
+      position: relative;
+      visibility: visible;
+      background-image: url("buttons/repeat_none.svg");
+      background-color: transparent;
+      background-repeat: no-repeat;
+      background-position: 40%;
+      width: 24px;
+      height: 100%;
+      margin: 0 0 0 12px;
+      border: 0;
+    }
   </style>
 </head>
 <body>
