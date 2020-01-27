@@ -39,7 +39,10 @@ class App extends React.Component {
     };
   }
 
-  // Initial call to load player with song and queue with songs
+  // Initial call to load player with song and queue with songs.
+  // Default behavior of component based on SoundClound does not
+  // load queue with songs nor does the player have a song loaded initially.
+  // Songs only get added to the queue when user adds them.
   componentDidMount() {
     // If my component needed to add songs
     // Make get request to server
