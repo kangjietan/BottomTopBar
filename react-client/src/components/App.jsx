@@ -43,6 +43,11 @@ const Start = styled(Time)`
   color: #f50;
 `;
 
+const End = styled(Time)`
+  text-align; left;
+  color: #333;
+`;
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -80,6 +85,10 @@ class App extends React.Component {
             <Repeat />
             <div className="progress">
               <Start>0:00</Start>
+              <div className="bar-container">
+                <input type="range" min="1" max="100" value="50" id="bar" />
+              </div>
+              <End>3:50</End>
             </div>
           </div>
         </section>
