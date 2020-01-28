@@ -6,7 +6,10 @@
   "scripts": {
     "start": "nodemon server/index.js",
     "react-dev": "webpack -d --watch",
-    "db": "node database/fakedata.js"
+    "db": "node database/fakedata.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage --colors"
   },
   "repository": {
     "type": "git",
@@ -22,9 +25,14 @@
     "@babel/cli": "^7.8.3",
     "@babel/core": "^7.8.3",
     "axios": "^0.19.2",
+    "babel-core": "^6.26.3",
+    "babel-jest": "^25.1.0",
     "babel-loader": "^8.0.6",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.2",
     "express": "^4.17.1",
     "faker": "^4.1.0",
+    "jest": "^25.1.0",
     "mongoose": "^5.8.9",
     "nodemon": "^2.0.2",
     "react": "^16.12.0",
