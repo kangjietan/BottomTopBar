@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
 
 // Buttons
 const Button = styled.button`
@@ -56,6 +57,7 @@ class App extends React.Component {
       song: '', // song url to load as audio source
       image: '', // song image to load as img
       seeking: 0, // Seeking time
+      initial: [], // Initial load of songs
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -73,6 +75,16 @@ class App extends React.Component {
 
     // User interacts with songs that are already stored on the app
     // When they play/pause, skip, go back, etc...
+    axios.get('http://localhost:3000/initial')
+      .then((res) => {
+        console.log(res);
+        this.setState({
+          initial: res.data,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   handleChange(event) {
