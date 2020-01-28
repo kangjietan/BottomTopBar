@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const faker = require('faker');
 
 mongoose.connect('mongodb://localhost/soundclone',
   { useNewUrlParser: true, useUnifiedTopology: true });
@@ -11,7 +12,7 @@ db.once('open', () => {
 
 const songSchema = mongoose.Schema({
   title: String,
-  artist: String,
+  author: String,
   length: Number,
   song_url: String,
   song_image: String,
@@ -19,14 +20,17 @@ const songSchema = mongoose.Schema({
 
 const Song = mongoose.model('Song', songSchema);
 
-const getInitial = (cb) => {
-  Song.find({}, null, { limit: 100 }, (error, docs) => {
-    if (error) {
-      console.log(error);
-    } else {
-      cb(docs);
-    }
-  });
-};
+const fakeData = [];
 
-module.exports.getInitial = getInitial;
+for (let i = 0; i < 100; i += 1) {
+  fakeData.push({
+    title: faker.lorem.word(),
+    author: faker.name.findName(),
+    length: 100 + i,
+    // length: faker.random.number(),
+    song_url: faker.internet.url(),
+    song_image: faker.image.imageUrl(),
+  });
+}
+
+Song.insertMany(fakeData);
