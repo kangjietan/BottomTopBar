@@ -55,7 +55,10 @@ class App extends React.Component {
     this.state = {
       song: '', // song url to load as audio source
       image: '', // song image to load as img
+      seeking: 0, // Seeking time
     };
+
+    this.handleChange = this.handleChange.bind(this);
   }
 
   // Initial call to load player with song and queue with songs.
@@ -72,7 +75,14 @@ class App extends React.Component {
     // When they play/pause, skip, go back, etc...
   }
 
+  handleChange(event) {
+    this.setState({
+      seeking: event.target.value,
+    });
+  }
+
   render() {
+    const { seeking } = this.state;
     return (
       <div className="playback-bar">
         <section className="player">
@@ -86,7 +96,7 @@ class App extends React.Component {
             <div className="progress">
               <Start>0:00</Start>
               <div className="bar-container">
-                <input type="range" min="1" max="100" value="50" id="bar" />
+                <input type="range" min="1" max="100" value={seeking} id="bar" onChange={this.handleChange} />
               </div>
               <End>3:50</End>
             </div>
