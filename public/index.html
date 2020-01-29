@@ -53,11 +53,29 @@
     .bar-container {
       line-height: 46px;
       flex-grow: 1;
+      margin: 0 10px;
     }
 
     #bar {
-      
+      -webkit-appearance: none;
+      background-color: #ccc;
+      height: 1px;
+      margin: 0 auto;
     }
+
+    #bar::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      border: 1px solid #f50;
+      background-color: #f50;
+      width: 8px;
+      height: 8px;
+      border-radius: 100%;
+      box-sizing: border-box;
+      margin-top: -4px;
+      margin-left: -4px;
+      transition: opacity .15s;
+    }
+
   </style>
   <!-- <script src="https://unpkg.com/axios/dist/axios.min.js"></script> -->
 </head>
