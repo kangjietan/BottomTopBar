@@ -32,6 +32,12 @@ const Repeat = styled(Button)`
   margin-right: 20px;
 `;
 
+const Volume = styled(Button)`
+  background-image: url("buttons/volume.svg");
+  padding: 10px;
+  margin-bottom: 15px;
+`;
+
 // Timestamps
 const Time = styled.div`
   width: 50px;
@@ -54,13 +60,16 @@ class App extends React.Component {
     super(props);
 
     this.state = {
+      initial: [], // Initial load of songs
       song: '', // song url to load as audio source
       image: '', // song image to load as img
       seeking: 0, // Seeking time
-      initial: [], // Initial load of songs
+      volume: 0, // Seeking time
+      pop: false,
     };
 
     this.handleChange = this.handleChange.bind(this);
+    this.popUpVolume = this.popUpVolume.bind(this);
   }
 
   // Initial call to load player with song and queue with songs.
@@ -89,12 +98,18 @@ class App extends React.Component {
 
   handleChange(event) {
     this.setState({
-      seeking: event.target.value,
+      [event.target.name]: event.target.value,
     });
   }
 
+  popUpVolume() {
+    this.setState((state) => ({ pop: !state.pop }));
+  }
+
   render() {
-    const { seeking } = this.state;
+    const { seeking, volume, pop } = this.state;
+    let visibility = pop ? 'visible' : 'hidden';
+
     return (
       <div className="playback-bar">
         <section className="player">
@@ -108,9 +123,17 @@ class App extends React.Component {
             <div className="progress">
               <Start>0:00</Start>
               <div className="bar-container">
-                <input type="range" min="1" max="100" value={seeking} id="bar" onChange={this.handleChange} />
+                <input type="range" min="1" max="100" value={seeking} id="bar" name="seeking" onChange={this.handleChange} />
               </div>
               <End>3:50</End>
+            </div>
+            <div>
+              <div className="volume">
+                <Volume onMouseEnter={this.popUpVolume} />
+                <div style={{ visibility }} className="volume-slider-container" onMouseLeave={this.popUpVolume}>
+                  <input type="range" min="1" max="100" value={volume} id="vol" name="volume" onChange={this.handleChange} />
+                </div>
+              </div>
             </div>
           </div>
         </section>
