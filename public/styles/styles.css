@@ -1,0 +1,104 @@
+body {
+  font: 12px/1.4 Lucida Grande,
+                 Lucida Sans Unicode,
+                 Lucida Sans,Garuda,
+                 Verdana,Tahoma,
+                 sans-serif;
+}
+
+/* All buttons */
+
+.playback-bar {
+  height: 48px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  visibility: hidden;
+  position: fixed;
+  margin: auto;
+  z-index: -1;
+}
+
+.playback-background {
+  border-top: 1px solid #cecece;
+  background-color: #f2f2f2;
+  position: absolute;
+  visibility: visible;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.playcontrol-buttons {
+  display: flex;
+  height: 100%;
+  position: absolute;
+  z-index: 1;
+  border-top: 1px solid #cecece;
+}
+
+/* Timeline / progress bar */
+
+.progress {
+  visibility: visible;
+  display: flex;
+}
+
+.bar-container {
+  line-height: 40px;
+  flex-grow: 1;
+  margin: 0 10px;
+}
+
+#bar {
+  -webkit-appearance: none;
+  background-color: #ccc;
+  height: 1px;
+  margin: 0 auto;
+}
+
+#bar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  border: 1px solid #f50;
+  background-color: #f50;
+  width: 8px;
+  height: 8px;
+  border-radius: 100%;
+  box-sizing: border-box;
+  margin-left: -4px;
+  transition: opacity .15s;
+}
+
+/* Volume */
+
+.volume {
+  visibility: visible;
+  height: 100%;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  margin-right: 12px;
+}
+
+.volume-slider-container {
+  background-color: #f2f2f2;
+  width: 30px;
+}
+
+#vol {
+  -webkit-appearance: slider-vertical;
+  width: 100%;
+}
+
+/* Song information */
+
+.song-info {
+  visibility: visible;
+  display: flex;
+  flex-direction: row;
+}
+
+#song-image {
+  margin: 0 10px 0 0;
+}
