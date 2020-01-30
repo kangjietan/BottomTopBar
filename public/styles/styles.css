@@ -50,6 +50,7 @@ body {
   line-height: 40px;
   flex-grow: 1;
   margin: 0 10px;
+  width: 512px;
 }
 
 #bar {
@@ -103,12 +104,13 @@ body {
   width: 360px;
 }
 
-#song-image {
+.song-img {
   margin: 0 10px 0 0;
 }
 
 .artist-title {
   width: 100%;
+  flex-grow: 1;
 }
 
 .artist {
