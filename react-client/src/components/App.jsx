@@ -39,6 +39,14 @@ const Volume = styled(Button)`
   margin-bottom: 15px;
 `;
 
+const Heart = styled(Button)`
+  background-image: url("buttons/heart.svg");
+`;
+
+const Queue = styled(Button)`
+  background-image: url("buttons/queue.svg");
+`;
+
 // Timestamps
 const Time = styled.div`
   width: 50px;
@@ -115,6 +123,7 @@ class App extends React.Component {
 
     return (
       <div className="playback-bar">
+        {/* <div className="player-container"> */}
         <section className="player">
           <div className="playback-background" />
           <div className="playcontrol-buttons">
@@ -142,10 +151,16 @@ class App extends React.Component {
               <div className="song-img">
                 <img src={song.song_image} alt="test" />
               </div>
-              <div>{song.title}</div>
+              <div className="artist-title">
+                <div className="artist">{song.artist}</div>
+                <div className="title">{song.title}</div>
+              </div>
+              <Heart />
+              <Queue />
             </div>
           </div>
         </section>
+        {/* </div> */}
       </div>
     );
   }

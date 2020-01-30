@@ -12,7 +12,7 @@ db.once('open', () => {
 
 const songSchema = mongoose.Schema({
   title: String,
-  author: String,
+  artist: String,
   length: Number,
   song_url: String,
   song_image: String,
@@ -25,7 +25,7 @@ const fakeData = [];
 for (let i = 0; i < 100; i += 1) {
   fakeData.push({
     title: faker.lorem.word(),
-    author: faker.name.findName(),
+    artist: faker.name.findName(),
     length: 100 + i,
     // length: faker.random.number(),
     song_url: faker.internet.url(),
