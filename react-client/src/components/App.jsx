@@ -64,7 +64,7 @@ class App extends React.Component {
       song: '', // song url to load as audio source
       image: '', // song image to load as img
       seeking: 0, // Seeking time
-      volume: 0, // Seeking time
+      volume: 100, // Seeking time
       pop: false,
     };
 
@@ -108,7 +108,7 @@ class App extends React.Component {
 
   render() {
     const { seeking, volume, pop } = this.state;
-    let visibility = pop ? 'visible' : 'hidden';
+    const visibility = pop ? 'visible' : 'hidden';
 
     return (
       <div className="playback-bar">
@@ -131,7 +131,7 @@ class App extends React.Component {
               <div className="volume">
                 <Volume onMouseEnter={this.popUpVolume} />
                 <div style={{ visibility }} className="volume-slider-container" onMouseLeave={this.popUpVolume}>
-                  <input type="range" min="1" max="100" value={volume} id="vol" name="volume" onChange={this.handleChange} />
+                  <input type="range" min="0" max="100" value={volume} id="vol" name="volume" onChange={this.handleChange} />
                 </div>
               </div>
             </div>
