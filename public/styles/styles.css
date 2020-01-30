@@ -78,6 +78,7 @@ body {
   display: flex;
   flex-direction: column-reverse;
   align-items: center;
+  margin-right: 12px;
 }
 
 .volume-slider-container {
@@ -88,4 +89,16 @@ body {
 #vol {
   -webkit-appearance: slider-vertical;
   width: 100%;
+}
+
+/* Song information */
+
+.song-info {
+  visibility: visible;
+  display: flex;
+  flex-direction: row;
+}
+
+#song-image {
+  margin: 0 10px 0 0;
 }

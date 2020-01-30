@@ -13,6 +13,7 @@ const Button = styled.button`
   height: 100%;
   margin: 0 0 0 12px;
   border: 0;
+  cursor: pointer;
 `;
 
 const Back = styled(Button)`
@@ -89,7 +90,7 @@ class App extends React.Component {
         console.log(res);
         this.setState({
           initial: res.data,
-        });
+        }, () => { this.setState({ song: res.data[0] }); });
       })
       .catch((err) => {
         console.log(err);
@@ -107,7 +108,9 @@ class App extends React.Component {
   }
 
   render() {
-    const { seeking, volume, pop } = this.state;
+    const {
+      seeking, volume, pop, initial, song,
+    } = this.state;
     const visibility = pop ? 'visible' : 'hidden';
 
     return (
@@ -134,6 +137,12 @@ class App extends React.Component {
                   <input type="range" min="0" max="100" value={volume} id="vol" name="volume" onChange={this.handleChange} />
                 </div>
               </div>
+            </div>
+            <div className="song-info">
+              <div className="song-img">
+                <img src={song.song_image} alt="test" />
+              </div>
+              <div>{song.title}</div>
             </div>
           </div>
         </section>
