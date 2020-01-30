@@ -29,7 +29,7 @@ for (let i = 0; i < 100; i += 1) {
     length: 100 + i,
     // length: faker.random.number(),
     song_url: faker.internet.url(),
-    song_image: faker.image.imageUrl(),
+    song_image: faker.image.imageUrl(30, 30),
   });
 }
 
