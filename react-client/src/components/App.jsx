@@ -12,14 +12,19 @@ class App extends React.Component {
       song: '', // song url to load as audio source
       // image: '', // song image to load as img
       seeking: 0, // Seeking time
-      volume: 100, // Seeking time
+      volume: 100, // Volume of audio
       pop: false,
       queuepop: false,
+      songLink: './songs/song1.mp3',
+      playing: false, // State of the song
+      startTime: '0:00', // Current time
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.popUpVolume = this.popUpVolume.bind(this);
     this.popUpQueue = this.popUpQueue.bind(this);
+    this.playSong = this.playSong.bind(this);
+    this.pauseSong = this.pauseSong.bind(this);
   }
 
   // Initial call to load player with song and queue with songs.
@@ -60,26 +65,39 @@ class App extends React.Component {
     this.setState((state) => ({ queuepop: !state.queuepop }));
   }
 
+  playSong(song) {
+    this.setState({ playing: true }, () => { song.play(); song.ontimeupdate = this.setState({ startTime: song.currentTime.toString() }); });
+  }
+
+  pauseSong(song) {
+    this.setState({ playing: false }, () => { song.pause(); });
+  }
+
   render() {
     const {
-      seeking, volume, pop, queuepop, song,
+      seeking, volume, pop, queuepop, song, songLink, playing, startTime,
     } = this.state;
+
+    const sng = document.getElementById('songsrc');
+    // sng.ontimeupdate = () => { console.log(sng.currentTime); };
     const volVisibility = pop ? 'visible' : 'hidden';
     const queueVisibility = queuepop ? 'visible' : 'hidden';
 
     return (
       <div className="playback-bar">
+        <audio src={songLink} type="audio/mpeg" id="songsrc" />
         {/* <div className="player-container"> */}
         <section className="player">
           <div className="playback-background" />
           <div className="playcontrol-buttons">
             <Back onClick={() => { console.log('It works'); }} />
-            <Play />
+            {playing ? <Pause onClick={() => { this.pauseSong(sng); }} />
+            : <Play onClick={() => { this.playSong(sng); }} />}
             <Forward />
             <Shuffle />
             <Repeat />
             <div className="progress">
-              <Start>0:00</Start>
+              <Start>{startTime}</Start>
               <div className="bar-container">
                 <input type="range" min="1" max="100" value={seeking} id="bar" name="seeking" onChange={this.handleChange} />
               </div>
@@ -132,15 +150,23 @@ const Button = styled.button`
 const Back = styled(Button)`
   background-image: url("buttons/back.svg");
 `;
+
 const Play = styled(Button)`
   background-image: url("buttons/play.svg");
 `;
+
+const Pause = styled(Button)`
+  background-image: url("buttons/pause.svg");
+`;
+
 const Forward = styled(Button)`
   background-image: url("buttons/forward.svg");
 `;
+
 const Shuffle = styled(Button)`
   background-image: url("buttons/shuffle_black.svg");
 `;
+
 const Repeat = styled(Button)`
   background-image: url("buttons/repeat_none.svg");
   margin-right: 20px;
