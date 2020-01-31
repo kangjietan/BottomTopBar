@@ -85,6 +85,8 @@ body {
 
 .volume-slider-container {
   background-color: #f2f2f2;
+  border: 1px solid transparent;
+  outline: 0;
   width: 30px;
   z-index: 11;
 }
@@ -136,10 +138,3 @@ body {
   height: 660px;
   max-height: calc(100vh - 120px);
 }
-
-/* .queue-background {
-  height: 100%;
-  position: relative;
-  box-shadow: 0 0 4px rgba(0,0,0,.25);
-  background-color: #fff;
-} */
