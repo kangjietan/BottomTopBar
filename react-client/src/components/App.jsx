@@ -65,8 +65,17 @@ class App extends React.Component {
     this.setState((state) => ({ queuepop: !state.queuepop }));
   }
 
+  // this.setState({ startTime: song.currentTime.toString() });
   playSong(song) {
-    this.setState({ playing: true }, () => { song.play(); song.ontimeupdate = this.setState({ startTime: song.currentTime.toString() }); });
+    // this.setState({ playing: true }, () => { song.play(); });
+    // song.ontimeupdate = () => { console.log(song.currentTime); };
+    // song.ontimeupdate = this.setState({ seeking: (song.currentTime / song.duration) * 100 });
+    this.setState({ playing: true }, () => {
+      setInterval(() => {
+        song.ontimeupdate = this.setState({ seeking: (song.currentTime / song.duration) * 100, startTime: Math.floor(song.currentTime) });
+      }, 1000);
+      song.play();
+    });
   }
 
   pauseSong(song) {
