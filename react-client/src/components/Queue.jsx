@@ -61,6 +61,14 @@ const Exit = styled.button`
   background-position: 50%;
   background-repeat: no-repeat;
   background-size: 24px 24px;
+  border: 0;
+  font: 0/0 a;
+  text-shadow: none;
+  color: transparent;
+  background-color: transparent;
+  transition: none;
+  padding-top: 3px;
+  padding-bottom: 3px;
   cursor: pointer;
 `;
 
