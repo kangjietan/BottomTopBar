@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import axios from 'axios';
 import Queue from './Queue.jsx';
 import Progress from './Progress.jsx';
+import Image from './Image.jsx';
+import ArtistTitle from './ArtistTitle.jsx';
 
 class App extends React.Component {
   constructor(props) {
@@ -16,7 +18,6 @@ class App extends React.Component {
       volume: 100, // Volume of audio
       pop: false,
       queuepop: false,
-      songLink: './songs/song1.mp3',
       playing: false, // State of the song
       startTime: '0:00', // Current time
       endTime: '1:23', // Duration of song
@@ -117,7 +118,7 @@ class App extends React.Component {
 
   render() {
     const {
-      seeking, volume, pop, queuepop, song, songLink, playing, startTime, endTime,
+      seeking, volume, pop, queuepop, song, playing, startTime, endTime,
     } = this.state;
 
     // The audio source. Will use audio properties for functionality.
@@ -133,7 +134,7 @@ class App extends React.Component {
         </audio>
         {/* <div className="player-container"> */}
         <section className="player">
-          <div className="playback-background" />
+          <PlayBackbg />
           <div className="playcontrol-buttons">
             <Back onClick={() => { console.log('It works'); }} />
             {playing ? <Pause onClick={() => { this.pauseSong(sng); }} />
@@ -155,13 +156,8 @@ class App extends React.Component {
               </div>
             </div>
             <div className="song-info">
-              <div className="song-img">
-                <img src={song.song_image} alt="test" />
-              </div>
-              <div className="artist-title">
-                <div className="artist">{song.artist}</div>
-                <div className="title">{song.title}</div>
-              </div>
+              <Image image={song.song_image} />
+              <ArtistTitle artist={song.artist} title={song.title} />
               <Heart />
               <Queueb onClick={this.popUpQueue} />
             </div>
@@ -244,6 +240,17 @@ const Start = styled(Time)`
 const End = styled(Time)`
   text-align; left;
   color: #333;
+`;
+
+// Background for whole container
+const PlayBackbg = styled.div`
+  border-top: 1px solid #cecece;
+  background-color: #f2f2f2;
+  position: absolute;
+  visibility: visible;
+  display: block;
+  width: 100%;
+  height: 100%;
 `;
 
 export default App;
