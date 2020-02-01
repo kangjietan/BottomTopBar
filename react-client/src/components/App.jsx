@@ -122,14 +122,13 @@ class App extends React.Component {
 
     // The audio source. Will use audio properties for functionality.
     const sng = document.getElementById('songsrc');
-    
-    // sng.ontimeupdate = () => { console.log(sng.currentTime); };
+
     const volVisibility = pop ? 'visible' : 'hidden';
     const queueVisibility = queuepop ? 'visible' : 'hidden';
 
     return (
       <div className="playback-bar">
-        <audio src={songLink} type="audio/mpeg" id="songsrc">
+        <audio src={song.song_url} type="audio/mpeg" id="songsrc">
           <track kind="captions" />
         </audio>
         {/* <div className="player-container"> */}
