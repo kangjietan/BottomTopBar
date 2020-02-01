@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import Queue from './Queue.jsx';
+import Progress from './Progress.jsx';
 
 class App extends React.Component {
   constructor(props) {
@@ -18,7 +19,7 @@ class App extends React.Component {
       songLink: './songs/song1.mp3',
       playing: false, // State of the song
       startTime: '0:00', // Current time
-      endTime: '0:00', // Duration of song
+      endTime: '1:23', // Duration of song
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -57,8 +58,7 @@ class App extends React.Component {
   }
 
   handleChange(event, param) {
-    const name = event.target.name;
-    const value = event.target.value;
+    const { name, value } = event.target;
     const song = param;
     this.setState({
       [name]: value,
@@ -70,10 +70,12 @@ class App extends React.Component {
   }
 
   popUpVolume() {
+    // Change visibility of the volume slider
     this.setState((state) => ({ pop: !state.pop }));
   }
 
   popUpQueue() {
+    // Change visibility of the queue pop up
     this.setState((state) => ({ queuepop: !state.queuepop }));
   }
 
@@ -81,13 +83,8 @@ class App extends React.Component {
   playSong(song) {
     // Set state to true, start interval, and play song
 
-    // this.setState({ playing: true }, () => { song.play(); });
     // song.ontimeupdate = () => { console.log(song.currentTime); };
-    // song.ontimeupdate = this.setState({ seeking: (song.currentTime / song.duration) * 100 });
     this.setState({ playing: true }, () => {
-      // setInterval(() => {
-      //   song.ontimeupdate = this.setState({ seeking: (song.currentTime / song.duration) * 100, startTime: Math.floor(song.currentTime) });
-      // }, 1000);
       const callback = () => {
         const currentSeeking = (song.currentTime / song.duration) * 100;
         const currentStartTime = Math.floor(song.currentTime);
@@ -109,42 +106,46 @@ class App extends React.Component {
     });
   }
 
+  // Format time in minutes:seconds -> 1:23
   updateTime(time) {
     const minutes = Math.floor(time / 60).toString();
     let seconds = time % 60;
-    seconds = seconds < 10 ? '0' + seconds : seconds;
-    const displayTime = minutes + ':'+ seconds;
+    seconds = seconds < 10 ? `:0${seconds}` : `:${seconds}`;
+    const displayTime = minutes + seconds;
     this.setState({ startTime: displayTime });
   }
 
   render() {
     const {
-      seeking, volume, pop, queuepop, song, songLink, playing, startTime,
+      seeking, volume, pop, queuepop, song, songLink, playing, startTime, endTime,
     } = this.state;
 
+    // The audio source. Will use audio properties for functionality.
     const sng = document.getElementById('songsrc');
+    
     // sng.ontimeupdate = () => { console.log(sng.currentTime); };
     const volVisibility = pop ? 'visible' : 'hidden';
     const queueVisibility = queuepop ? 'visible' : 'hidden';
 
     return (
       <div className="playback-bar">
-        <audio src={songLink} type="audio/mpeg" id="songsrc" />
+        <audio src={songLink} type="audio/mpeg" id="songsrc">
+          <track kind="captions" />
+        </audio>
         {/* <div className="player-container"> */}
         <section className="player">
           <div className="playback-background" />
           <div className="playcontrol-buttons">
             <Back onClick={() => { console.log('It works'); }} />
-            {playing ? <Pause onClick={() => { this.pauseSong(sng); }} /> : <Play onClick={() => { this.playSong(sng); }} />}
+            {playing ? <Pause onClick={() => { this.pauseSong(sng); }} />
+              : <Play onClick={() => { this.playSong(sng); }} />}
             <Forward />
             <Shuffle />
             <Repeat />
             <div className="progress">
               <Start>{startTime}</Start>
-              <div className="bar-container">
-                <input type="range" min="0" max="100" value={seeking} id="bar" name="seeking" onChange={(e) => { this.handleChange(e, sng); }} />
-              </div>
-              <End>3:50</End>
+              <Progress change={this.handleChange} val={seeking} song={sng} />
+              <End>{endTime}</End>
             </div>
             <div>
               <div className="volume">
