@@ -13,7 +13,6 @@ class App extends React.Component {
     this.state = {
       initial: [], // Initial load of songs
       song: '', // song url to load as audio source
-      // image: '', // song image to load as img
       seeking: 0, // Seeking time
       volume: 100, // Volume of audio
       pop: false,
@@ -29,6 +28,7 @@ class App extends React.Component {
     this.playSong = this.playSong.bind(this);
     this.pauseSong = this.pauseSong.bind(this);
     this.updateTime = this.updateTime.bind(this);
+    this.convertDuration = this.convertDuration.bind(this);
     this.check = (cb, wait) => {
       setInterval(cb, wait);
     };
@@ -85,7 +85,7 @@ class App extends React.Component {
     // Set state to true, start interval, and play song
 
     // song.ontimeupdate = () => { console.log(song.currentTime); };
-    this.setState({ playing: true }, () => {
+    this.setState({ playing: true, endTime: song.duration }, () => {
       const callback = () => {
         const currentSeeking = (song.currentTime / song.duration) * 100;
         const currentStartTime = Math.floor(song.currentTime);
@@ -114,6 +114,10 @@ class App extends React.Component {
     seconds = seconds < 10 ? `:0${seconds}` : `:${seconds}`;
     const displayTime = minutes + seconds;
     this.setState({ startTime: displayTime });
+  }
+
+  convertDuration(time) {
+
   }
 
   render() {
