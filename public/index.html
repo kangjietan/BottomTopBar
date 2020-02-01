@@ -4,61 +4,7 @@
 <head>
   <meta charset="utf-8">
   <title>Bottom Audio Player</title>
-  <style>
-    body {
-      font: 12px/1.4 Lucida Grande,
-                     Lucida Sans Unicode,
-                     Lucida Sans,Garuda,
-                     Verdana,Tahoma,
-                     sans-serif;
-    }
-
-    .playback-bar {
-      height: 48px;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      width: 100%;
-      visibility: hidden;
-      position: fixed;
-      margin: auto;
-      z-index: -1;
-    }
-
-    .playback-background {
-      border-top: 1px solid #cecece;
-      background-color: #f2f2f2;
-      position: absolute;
-      visibility: visible;
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
-
-    .playcontrol-buttons {
-      display: flex;
-      height: 100%;
-      position: absolute;
-      z-index: 1;
-      border-top: 1px solid #cecece;
-    }
-
-    /* Timeline / progress bar */
-
-    .progress {
-      visibility: visible;
-      display: flex;
-    }
-
-    .bar-container {
-      line-height: 46px;
-      flex-grow: 1;
-    }
-
-    #bar {
-      
-    }
-  </style>
+  <link rel="stylesheet" href="styles/styles.css">
   <!-- <script src="https://unpkg.com/axios/dist/axios.min.js"></script> -->
 </head>
 <body>

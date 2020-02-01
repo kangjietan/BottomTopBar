@@ -7,7 +7,7 @@ const db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {
-  console.log('connected');
+  console.log('connected, inserting data with local links to songs');
 });
 
 const songSchema = mongoose.Schema({
@@ -22,15 +22,16 @@ const Song = mongoose.model('Song', songSchema);
 
 const fakeData = [];
 
-for (let i = 0; i < 100; i += 1) {
-  fakeData.push({
-    title: faker.lorem.word(),
-    artist: faker.name.findName(),
-    length: 100 + i,
-    // length: faker.random.number(),
-    song_url: faker.internet.url(),
-    song_image: faker.image.imageUrl(30, 30),
-  });
+for (let i = 0; i < 10; i += 1) {
+  for (let j = 1; j <= 10; j += 1) {
+    fakeData.push({
+      title: faker.lorem.word(),
+      artist: faker.name.findName(),
+      length: 100 + i,
+      song_url: `./songs/song${j}.mp3`,
+      song_image: faker.image.imageUrl(30, 30),
+    });
+  }
 }
 
 Song.insertMany(fakeData);
