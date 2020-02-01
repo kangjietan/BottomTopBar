@@ -18,6 +18,7 @@ class App extends React.Component {
       songLink: './songs/song1.mp3',
       playing: false, // State of the song
       startTime: '0:00', // Current time
+      endTime: '0:00', // Duration of song
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -25,6 +26,10 @@ class App extends React.Component {
     this.popUpQueue = this.popUpQueue.bind(this);
     this.playSong = this.playSong.bind(this);
     this.pauseSong = this.pauseSong.bind(this);
+    this.updateTime = this.updateTime.bind(this);
+    this.check = (cb, wait) => {
+      setInterval(cb, wait);
+    };
   }
 
   // Initial call to load player with song and queue with songs.
@@ -51,9 +56,16 @@ class App extends React.Component {
       });
   }
 
-  handleChange(event) {
+  handleChange(event, param) {
+    const name = event.target.name;
+    const value = event.target.value;
+    const song = param;
     this.setState({
-      [event.target.name]: event.target.value,
+      [name]: value,
+    }, () => {
+      if (name === 'seeking') {
+        song.currentTime = (value / 100) * song.duration;
+      }
     });
   }
 
@@ -67,19 +79,42 @@ class App extends React.Component {
 
   // this.setState({ startTime: song.currentTime.toString() });
   playSong(song) {
+    // Set state to true, start interval, and play song
+
     // this.setState({ playing: true }, () => { song.play(); });
     // song.ontimeupdate = () => { console.log(song.currentTime); };
     // song.ontimeupdate = this.setState({ seeking: (song.currentTime / song.duration) * 100 });
     this.setState({ playing: true }, () => {
-      setInterval(() => {
-        song.ontimeupdate = this.setState({ seeking: (song.currentTime / song.duration) * 100, startTime: Math.floor(song.currentTime) });
-      }, 1000);
+      // setInterval(() => {
+      //   song.ontimeupdate = this.setState({ seeking: (song.currentTime / song.duration) * 100, startTime: Math.floor(song.currentTime) });
+      // }, 1000);
+      const callback = () => {
+        const currentSeeking = (song.currentTime / song.duration) * 100;
+        const currentStartTime = Math.floor(song.currentTime);
+        song.ontimeupdate = () => {
+          this.setState({ seeking: currentSeeking });
+          this.updateTime(currentStartTime);
+        };
+      };
+      this.check(callback, 500);
       song.play();
     });
   }
 
   pauseSong(song) {
-    this.setState({ playing: false }, () => { song.pause(); });
+    // Set state to false, clear interval, and pause song
+    this.setState({ playing: false }, () => {
+      clearInterval(this.check);
+      song.pause();
+    });
+  }
+
+  updateTime(time) {
+    const minutes = Math.floor(time / 60).toString();
+    let seconds = time % 60;
+    seconds = seconds < 10 ? '0' + seconds : seconds;
+    const displayTime = minutes + ':'+ seconds;
+    this.setState({ startTime: displayTime });
   }
 
   render() {
@@ -100,15 +135,14 @@ class App extends React.Component {
           <div className="playback-background" />
           <div className="playcontrol-buttons">
             <Back onClick={() => { console.log('It works'); }} />
-            {playing ? <Pause onClick={() => { this.pauseSong(sng); }} />
-            : <Play onClick={() => { this.playSong(sng); }} />}
+            {playing ? <Pause onClick={() => { this.pauseSong(sng); }} /> : <Play onClick={() => { this.playSong(sng); }} />}
             <Forward />
             <Shuffle />
             <Repeat />
             <div className="progress">
               <Start>{startTime}</Start>
               <div className="bar-container">
-                <input type="range" min="1" max="100" value={seeking} id="bar" name="seeking" onChange={this.handleChange} />
+                <input type="range" min="0" max="100" value={seeking} id="bar" name="seeking" onChange={(e) => { this.handleChange(e, sng); }} />
               </div>
               <End>3:50</End>
             </div>
