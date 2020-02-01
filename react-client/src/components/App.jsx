@@ -2,6 +2,9 @@ import React from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import Queue from './Queue.jsx';
+import Progress from './Progress.jsx';
+import Image from './Image.jsx';
+import ArtistTitle from './ArtistTitle.jsx';
 
 class App extends React.Component {
   constructor(props) {
@@ -15,9 +18,9 @@ class App extends React.Component {
       volume: 100, // Volume of audio
       pop: false,
       queuepop: false,
-      songLink: './songs/song1.mp3',
       playing: false, // State of the song
       startTime: '0:00', // Current time
+      endTime: '1:23', // Duration of song
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -25,6 +28,10 @@ class App extends React.Component {
     this.popUpQueue = this.popUpQueue.bind(this);
     this.playSong = this.playSong.bind(this);
     this.pauseSong = this.pauseSong.bind(this);
+    this.updateTime = this.updateTime.bind(this);
+    this.check = (cb, wait) => {
+      setInterval(cb, wait);
+    };
   }
 
   // Initial call to load player with song and queue with songs.
@@ -51,66 +58,94 @@ class App extends React.Component {
       });
   }
 
-  handleChange(event) {
+  handleChange(event, param) {
+    const { name, value } = event.target;
+    const song = param;
     this.setState({
-      [event.target.name]: event.target.value,
+      [name]: value,
+    }, () => {
+      if (name === 'seeking') {
+        song.currentTime = (value / 100) * song.duration;
+      }
     });
   }
 
   popUpVolume() {
+    // Change visibility of the volume slider
     this.setState((state) => ({ pop: !state.pop }));
   }
 
   popUpQueue() {
+    // Change visibility of the queue pop up
     this.setState((state) => ({ queuepop: !state.queuepop }));
   }
 
   // this.setState({ startTime: song.currentTime.toString() });
   playSong(song) {
-    // this.setState({ playing: true }, () => { song.play(); });
+    // Set state to true, start interval, and play song
+
     // song.ontimeupdate = () => { console.log(song.currentTime); };
-    // song.ontimeupdate = this.setState({ seeking: (song.currentTime / song.duration) * 100 });
     this.setState({ playing: true }, () => {
-      setInterval(() => {
-        song.ontimeupdate = this.setState({ seeking: (song.currentTime / song.duration) * 100, startTime: Math.floor(song.currentTime) });
-      }, 1000);
+      const callback = () => {
+        const currentSeeking = (song.currentTime / song.duration) * 100;
+        const currentStartTime = Math.floor(song.currentTime);
+        song.ontimeupdate = () => {
+          this.setState({ seeking: currentSeeking });
+          this.updateTime(currentStartTime);
+        };
+      };
+      this.check(callback, 500);
       song.play();
     });
   }
 
   pauseSong(song) {
-    this.setState({ playing: false }, () => { song.pause(); });
+    // Set state to false, clear interval, and pause song
+    this.setState({ playing: false }, () => {
+      clearInterval(this.check);
+      song.pause();
+    });
+  }
+
+  // Format time in minutes:seconds -> 1:23
+  updateTime(time) {
+    const minutes = Math.floor(time / 60).toString();
+    let seconds = time % 60;
+    seconds = seconds < 10 ? `:0${seconds}` : `:${seconds}`;
+    const displayTime = minutes + seconds;
+    this.setState({ startTime: displayTime });
   }
 
   render() {
     const {
-      seeking, volume, pop, queuepop, song, songLink, playing, startTime,
+      seeking, volume, pop, queuepop, song, playing, startTime, endTime,
     } = this.state;
 
+    // The audio source. Will use audio properties for functionality.
     const sng = document.getElementById('songsrc');
-    // sng.ontimeupdate = () => { console.log(sng.currentTime); };
+
     const volVisibility = pop ? 'visible' : 'hidden';
     const queueVisibility = queuepop ? 'visible' : 'hidden';
 
     return (
       <div className="playback-bar">
-        <audio src={songLink} type="audio/mpeg" id="songsrc" />
+        <audio src={song.song_url} type="audio/mpeg" id="songsrc">
+          <track kind="captions" />
+        </audio>
         {/* <div className="player-container"> */}
         <section className="player">
-          <div className="playback-background" />
+          <PlayBackbg />
           <div className="playcontrol-buttons">
             <Back onClick={() => { console.log('It works'); }} />
             {playing ? <Pause onClick={() => { this.pauseSong(sng); }} />
-            : <Play onClick={() => { this.playSong(sng); }} />}
+              : <Play onClick={() => { this.playSong(sng); }} />}
             <Forward />
             <Shuffle />
             <Repeat />
             <div className="progress">
               <Start>{startTime}</Start>
-              <div className="bar-container">
-                <input type="range" min="1" max="100" value={seeking} id="bar" name="seeking" onChange={this.handleChange} />
-              </div>
-              <End>3:50</End>
+              <Progress change={this.handleChange} val={seeking} song={sng} />
+              <End>{endTime}</End>
             </div>
             <div>
               <div className="volume">
@@ -121,13 +156,8 @@ class App extends React.Component {
               </div>
             </div>
             <div className="song-info">
-              <div className="song-img">
-                <img src={song.song_image} alt="test" />
-              </div>
-              <div className="artist-title">
-                <div className="artist">{song.artist}</div>
-                <div className="title">{song.title}</div>
-              </div>
+              <Image image={song.song_image} />
+              <ArtistTitle artist={song.artist} title={song.title} />
               <Heart />
               <Queueb onClick={this.popUpQueue} />
             </div>
@@ -210,6 +240,17 @@ const Start = styled(Time)`
 const End = styled(Time)`
   text-align; left;
   color: #333;
+`;
+
+// Background for whole container
+const PlayBackbg = styled.div`
+  border-top: 1px solid #cecece;
+  background-color: #f2f2f2;
+  position: absolute;
+  visibility: visible;
+  display: block;
+  width: 100%;
+  height: 100%;
 `;
 
 export default App;
