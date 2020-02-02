@@ -200,8 +200,19 @@ class App extends React.Component {
     // The audio source. Will use audio properties for functionality.
     const sng = document.getElementById('songsrc');
 
+    // Pop up volume and queue
     const volVisibility = pop ? 'visible' : 'hidden';
     const queueVisibility = queuepop ? 'visible' : 'hidden';
+
+    // Repeat button
+    let repeatButton;
+    if (loopAll && loop) {
+      repeatButton = <RepeatAll onClick={this.repeatNone} />;
+    } else if (loop) {
+      repeatButton = <RepeatOne onClick={() => { this.repeatAll(sng); }} />;
+    } else {
+      repeatButton = <Repeat onClick={() => { this.repeat(sng); }} />;
+    }
 
     return (
       <div className="playback-bar">
@@ -217,9 +228,7 @@ class App extends React.Component {
               : <Play onClick={() => { this.playSong(sng); }} />}
             <Forward onClick={this.skip} />
             <Shuffle />
-            {loopAll && loop ? <RepeatAll onClick={this.repeatNone} /> 
-              : loop ? <RepeatOne onClick={() => { this.repeatAll(sng); }} />
-              : <Repeat onClick={() => { this.repeat(sng); }} />}
+            {repeatButton}
             <div className="progress">
               <Start>{startTime}</Start>
               <Progress change={this.handleChange} val={seeking} song={sng} />
@@ -326,7 +335,7 @@ const Start = styled(Time)`
 `;
 
 const End = styled(Time)`
-  text-align; left;
+  text-align: left;
   color: #333;
 `;
 
