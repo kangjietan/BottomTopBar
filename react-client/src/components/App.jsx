@@ -12,6 +12,7 @@ class App extends React.Component {
 
     this.state = {
       initial: [], // Initial load of songs
+      currentIdx: 0, // Current song in array
       song: '', // song url to load as audio source
       seeking: 0, // Seeking time
       volume: 100, // Volume of audio
@@ -27,6 +28,8 @@ class App extends React.Component {
     this.popUpQueue = this.popUpQueue.bind(this);
     this.playSong = this.playSong.bind(this);
     this.pauseSong = this.pauseSong.bind(this);
+    this.goBack = this.goBack.bind(this);
+    this.skip = this.skip.bind(this);
     this.updateTime = this.updateTime.bind(this);
     // this.convertDuration = this.convertDuration.bind(this);
     // this.getSongs = this.getSongs.bind(this);
@@ -66,7 +69,7 @@ class App extends React.Component {
         // console.log(res);
         this.setState({
           initial: res.data,
-        }, () => { this.setState({ song: res.data[0] }); });
+        }, () => { this.setState({ song: this.state.initial[0] }); });
       })
       .catch((err) => {
         console.log(err);
@@ -114,6 +117,26 @@ class App extends React.Component {
     });
   }
 
+  goBack() {
+    // Go back one from current index
+    const { currentIdx, initial } = this.state;
+    console.log('Outside goBack', currentIdx);
+    if (currentIdx !== 0) {
+      this.setState((state) => ({ currentIdx: state.currentIdx - 1 }), () => {
+        this.setState({ song: initial[currentIdx] }, () => { console.log(currentIdx); });
+      });
+    }
+  }
+
+  skip() {
+    // Go forward one from current index
+    const { initial, currentIdx } = this.state;
+    console.log('Outside skip', currentIdx);
+    this.setState((state) => ({ currentIdx: state.currentIdx + 1 }), () => {
+      this.setState({ song: initial[currentIdx] }, () => { console.log(currentIdx); });
+    });
+  }
+
   pauseSong(song) {
     // Set state to false, clear interval, and pause song
     this.setState({ playing: false }, () => {
@@ -155,10 +178,10 @@ class App extends React.Component {
         <section className="player">
           <PlayBackbg />
           <div className="playcontrol-buttons">
-            <Back onClick={() => { console.log('It works'); }} />
+            <Back onClick={this.goBack} />
             {playing ? <Pause onClick={() => { this.pauseSong(sng); }} />
               : <Play onClick={() => { this.playSong(sng); }} />}
-            <Forward />
+            <Forward onClick={this.skip} />
             <Shuffle />
             <Repeat />
             <div className="progress">
