@@ -21,8 +21,9 @@ class App extends React.Component {
       playing: false, // State of the song
       shuffle: false, // Shuffle songs
       loop: false, // replay song
+      loopAll: false, // replay song infinitely
       startTime: '0:00', // Current time
-      endTime: '1:23', // Duration of song
+      endTime: '0:00', // Duration of song
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -33,9 +34,8 @@ class App extends React.Component {
     this.goBack = this.goBack.bind(this);
     this.skip = this.skip.bind(this);
     this.repeat = this.repeat.bind(this);
-    this.updateTime = this.updateTime.bind(this);
-    // this.convertDuration = this.convertDuration.bind(this);
-    // this.getSongs = this.getSongs.bind(this);
+    this.repeatAll = this.repeatAll.bind(this);
+    this.repeatNone = this.repeatNone.bind(this);
     this.check = (cb, wait) => {
       setInterval(cb, wait);
     };
@@ -54,16 +54,6 @@ class App extends React.Component {
     // User interacts with songs that are already stored on the app
     // When they play/pause, skip, go back, etc...
     this.getSongs();
-    // axios.get('http://localhost:3000/initial')
-    //   .then((res) => {
-    //     // console.log(res);
-    //     this.setState({
-    //       initial: res.data,
-    //     }, () => { this.setState({ song: res.data[0] }); });
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
   }
 
   getSongs() {
@@ -72,7 +62,10 @@ class App extends React.Component {
         // console.log(res);
         this.setState({
           initial: res.data,
-        }, () => { this.setState({ song: this.state.initial[0] }); });
+        }, () => {
+          const { initial, currentIdx } = this.state;
+          this.setState({ song: initial[currentIdx] });
+        });
       })
       .catch((err) => {
         console.log(err);
@@ -106,24 +99,43 @@ class App extends React.Component {
     // Set state to true, start interval, and play song
 
     // song.ontimeupdate = () => { console.log(song.currentTime); };
-    this.setState({ playing: true, endTime: song.duration }, () => {
+    this.setState({ playing: true }, () => {
       const callback = () => {
+        // Constantly update startTime and slider value
         const currentSeeking = (song.currentTime / song.duration) * 100;
         const currentStartTime = Math.floor(song.currentTime);
+        // const checkDuration = () => {
+        //   // If song has ended check whether user has wanted to loop once or inf.
+        //   if (song.ended) {
+        //     console.log('Checking song has ended');
+        //     const { loop, loopAll } = this.state;
+        //     if (loop === true && loopAll === false) {
+        //       this.repeat(song);
+        //     }
+        //   }
+        // };
+
         song.ontimeupdate = () => {
-          this.setState({ seeking: currentSeeking });
+          this.setState({ seeking: currentSeeking }, () => {
+            if (song.ended) {
+              this.setState({ playing: false });
+            }
+          });
           this.updateTime(currentStartTime);
         };
       };
+      // Set up interval to constantly update startTime and progress bar
       this.check(callback, 500);
+      // play song
       song.play();
+      this.convertDuration(song.duration);
     });
   }
 
   goBack() {
     // Go back one from current index
-    const { currentIdx, initial } = this.state;
     // console.log('Outside goBack', currentIdx);
+    const { currentIdx, initial } = this.state;
     if (currentIdx !== 0) {
       this.setState((state) => ({ currentIdx: state.currentIdx - 1 }), () => {
         this.setState({ song: initial[this.state.currentIdx] });
@@ -134,17 +146,25 @@ class App extends React.Component {
   skip() {
     // Go forward one from current index
     const { initial, currentIdx } = this.state;
-    // console.log('Outside skip', currentIdx, song);
-    // this.setState((state) => ({ currentIdx: state.currentIdx + 1 }), () => {
-    //   this.setState({ song: initial[currentIdx] }, () => { console.log(currentIdx); });
-    // });
     this.setState({ currentIdx: currentIdx + 1 }, () => {
       this.setState({ song: initial[this.state.currentIdx] });
     });
   }
 
   repeat(song) {
-    this.setState((state) => ({ loop: !state.loop }), () => { song.loop = this.state.loop; });
+    this.setState({ loop: true }, () => {
+      const { loop } = this.state;
+      song.loop = loop;
+    });
+  }
+
+  repeatAll(song) {
+    song.loop = false;
+    this.setState({ loopAll: true });
+  }
+
+  repeatNone() {
+    this.setState({ loop: false, loopAll: false });
   }
 
   pauseSong(song) {
@@ -164,13 +184,17 @@ class App extends React.Component {
     this.setState({ startTime: displayTime });
   }
 
-  // convertDuration(time) {
-
-  // }
+  convertDuration(time) {
+    const minutes = Math.floor(time / 60).toString();
+    let seconds = Math.floor(time % 60);
+    seconds = seconds < 10 ? `:0${seconds}` : `:${seconds}`;
+    const displayTime = minutes + seconds;
+    this.setState({ endTime: displayTime });
+  }
 
   render() {
     const {
-      seeking, volume, pop, queuepop, song, playing, startTime, endTime, loop,
+      seeking, volume, pop, queuepop, song, playing, startTime, endTime, loop, loopAll,
     } = this.state;
 
     // The audio source. Will use audio properties for functionality.
@@ -193,7 +217,8 @@ class App extends React.Component {
               : <Play onClick={() => { this.playSong(sng); }} />}
             <Forward onClick={this.skip} />
             <Shuffle />
-            {loop ? <RepeatOne onClick={() => { this.repeat(sng); }} />
+            {loopAll && loop ? <RepeatAll onClick={this.repeatNone} /> 
+              : loop ? <RepeatOne onClick={() => { this.repeatAll(sng); }} />
               : <Repeat onClick={() => { this.repeat(sng); }} />}
             <div className="progress">
               <Start>{startTime}</Start>
@@ -266,6 +291,11 @@ const Repeat = styled(Button)`
 
 const RepeatOne = styled(Button)`
   background-image: url("buttons/repeat_one.svg");
+  margin-right: 20px;
+`;
+
+const RepeatAll = styled(Button)`
+  background-image: url("buttons/repeat.svg");
   margin-right: 20px;
 `;
 
