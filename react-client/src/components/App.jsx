@@ -120,10 +120,10 @@ class App extends React.Component {
   goBack() {
     // Go back one from current index
     const { currentIdx, initial } = this.state;
-    console.log('Outside goBack', currentIdx);
+    // console.log('Outside goBack', currentIdx);
     if (currentIdx !== 0) {
       this.setState((state) => ({ currentIdx: state.currentIdx - 1 }), () => {
-        this.setState({ song: initial[currentIdx] }, () => { console.log(currentIdx); });
+        this.setState({ song: initial[this.state.currentIdx] });
       });
     }
   }
@@ -131,9 +131,12 @@ class App extends React.Component {
   skip() {
     // Go forward one from current index
     const { initial, currentIdx } = this.state;
-    console.log('Outside skip', currentIdx);
-    this.setState((state) => ({ currentIdx: state.currentIdx + 1 }), () => {
-      this.setState({ song: initial[currentIdx] }, () => { console.log(currentIdx); });
+    // console.log('Outside skip', currentIdx, song);
+    // this.setState((state) => ({ currentIdx: state.currentIdx + 1 }), () => {
+    //   this.setState({ song: initial[currentIdx] }, () => { console.log(currentIdx); });
+    // });
+    this.setState({ currentIdx: currentIdx + 1 }, () => {
+      this.setState({ song: initial[this.state.currentIdx] });
     });
   }
 
