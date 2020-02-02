@@ -36,8 +36,15 @@ class App extends React.Component {
     this.repeat = this.repeat.bind(this);
     this.repeatAll = this.repeatAll.bind(this);
     this.repeatNone = this.repeatNone.bind(this);
+    this.shuffle = this.shuffle.bind(this);
     this.check = (cb, wait) => {
       setInterval(cb, wait);
+    };
+    this.random = () => {
+      // Idx between 0 and initial array length
+      const { initial } = this.state;
+      const randomIdx = Math.floor(Math.random() * initial.length);
+      return randomIdx;
     };
   }
 
@@ -104,16 +111,6 @@ class App extends React.Component {
         // Constantly update startTime and slider value
         const currentSeeking = (song.currentTime / song.duration) * 100;
         const currentStartTime = Math.floor(song.currentTime);
-        // const checkDuration = () => {
-        //   // If song has ended check whether user has wanted to loop once or inf.
-        //   if (song.ended) {
-        //     console.log('Checking song has ended');
-        //     const { loop, loopAll } = this.state;
-        //     if (loop === true && loopAll === false) {
-        //       this.repeat(song);
-        //     }
-        //   }
-        // };
 
         song.ontimeupdate = () => {
           this.setState({ seeking: currentSeeking }, () => {
@@ -132,23 +129,42 @@ class App extends React.Component {
     });
   }
 
+  pauseSong(song) {
+    // Set state to false, clear interval, and pause song
+    this.setState({ playing: false }, () => {
+      clearInterval(this.check);
+      song.pause();
+    });
+  }
+
   goBack() {
     // Go back one from current index
-    // console.log('Outside goBack', currentIdx);
-    const { currentIdx, initial } = this.state;
+    const { currentIdx, initial, shuffle } = this.state;
     if (currentIdx !== 0) {
-      this.setState((state) => ({ currentIdx: state.currentIdx - 1 }), () => {
-        this.setState({ song: initial[this.state.currentIdx] });
-      });
+      // If shuffle is true, generate random idx
+      if (shuffle) {
+        const randomIdx = this.random();
+        this.setState({ currentIdx: randomIdx, song: initial[randomIdx] });
+      } else {
+        this.setState((state) => ({ currentIdx: state.currentIdx - 1 }), () => {
+          this.setState({ song: initial[this.state.currentIdx] });
+        });
+      }
     }
   }
 
   skip() {
     // Go forward one from current index
-    const { initial, currentIdx } = this.state;
-    this.setState({ currentIdx: currentIdx + 1 }, () => {
-      this.setState({ song: initial[this.state.currentIdx] });
-    });
+    const { initial, currentIdx, shuffle } = this.state;
+    // If shuffle is true, generate random idx
+    if (shuffle) {
+      const randomIdx = this.random();
+      this.setState({ currentIdx: randomIdx, song: initial[randomIdx] });
+    } else {
+      this.setState({ currentIdx: currentIdx + 1 }, () => {
+        this.setState({ song: initial[this.state.currentIdx] });
+      });
+    }
   }
 
   repeat(song) {
@@ -167,12 +183,8 @@ class App extends React.Component {
     this.setState({ loop: false, loopAll: false });
   }
 
-  pauseSong(song) {
-    // Set state to false, clear interval, and pause song
-    this.setState({ playing: false }, () => {
-      clearInterval(this.check);
-      song.pause();
-    });
+  shuffle() {
+    this.setState({ shuffle: true });
   }
 
   // Format time in minutes:seconds -> 1:23
@@ -194,7 +206,7 @@ class App extends React.Component {
 
   render() {
     const {
-      seeking, volume, pop, queuepop, song, playing, startTime, endTime, loop, loopAll,
+      seeking, volume, pop, queuepop, song, playing, startTime, endTime, loop, loopAll, shuffle,
     } = this.state;
 
     // The audio source. Will use audio properties for functionality.
@@ -227,7 +239,8 @@ class App extends React.Component {
             {playing ? <Pause onClick={() => { this.pauseSong(sng); }} />
               : <Play onClick={() => { this.playSong(sng); }} />}
             <Forward onClick={this.skip} />
-            <Shuffle />
+            {shuffle ? <ShuffleTrue onClick={this.shuffle} /> : <Shuffle onClick={this.shuffle} />}
+            {/* Render current state of repeat */}
             {repeatButton}
             <div className="progress">
               <Start>{startTime}</Start>
@@ -291,6 +304,10 @@ const Forward = styled(Button)`
 
 const Shuffle = styled(Button)`
   background-image: url("buttons/shuffle_black.svg");
+`;
+
+const ShuffleTrue = styled(Button)`
+  background-image: url("buttons/shuffle_orange.svg");
 `;
 
 const Repeat = styled(Button)`
