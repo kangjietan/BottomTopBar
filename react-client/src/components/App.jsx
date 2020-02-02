@@ -28,7 +28,8 @@ class App extends React.Component {
     this.playSong = this.playSong.bind(this);
     this.pauseSong = this.pauseSong.bind(this);
     this.updateTime = this.updateTime.bind(this);
-    this.convertDuration = this.convertDuration.bind(this);
+    // this.convertDuration = this.convertDuration.bind(this);
+    // this.getSongs = this.getSongs.bind(this);
     this.check = (cb, wait) => {
       setInterval(cb, wait);
     };
@@ -46,6 +47,20 @@ class App extends React.Component {
 
     // User interacts with songs that are already stored on the app
     // When they play/pause, skip, go back, etc...
+    this.getSongs();
+    // axios.get('http://localhost:3000/initial')
+    //   .then((res) => {
+    //     // console.log(res);
+    //     this.setState({
+    //       initial: res.data,
+    //     }, () => { this.setState({ song: res.data[0] }); });
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   });
+  }
+
+  getSongs() {
     axios.get('http://localhost:3000/initial')
       .then((res) => {
         // console.log(res);
@@ -116,9 +131,9 @@ class App extends React.Component {
     this.setState({ startTime: displayTime });
   }
 
-  convertDuration(time) {
+  // convertDuration(time) {
 
-  }
+  // }
 
   render() {
     const {

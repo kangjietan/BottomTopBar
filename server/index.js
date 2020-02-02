@@ -12,6 +12,10 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 app.listen(PORT, () => { console.log(`Listening on PORT: ${PORT}`); });
 
+// app.get('/test', (req, res) => {
+//   return res.end('hi');
+// });
+
 app.get('/initial', (req, res) => {
   const callback = (data) => {
     res.json(data);
@@ -19,3 +23,5 @@ app.get('/initial', (req, res) => {
 
   db.getInitial(callback);
 });
+
+// module.exports = app;
