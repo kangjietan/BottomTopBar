@@ -16,9 +16,11 @@ class App extends React.Component {
       song: '', // song url to load as audio source
       seeking: 0, // Seeking time
       volume: 100, // Volume of audio
-      pop: false,
-      queuepop: false,
+      pop: false, // Pop up the volume slider
+      queuepop: false, // Pop up the queue
       playing: false, // State of the song
+      shuffle: false, // Shuffle songs
+      loop: false, // replay song
       startTime: '0:00', // Current time
       endTime: '1:23', // Duration of song
     };
@@ -30,6 +32,7 @@ class App extends React.Component {
     this.pauseSong = this.pauseSong.bind(this);
     this.goBack = this.goBack.bind(this);
     this.skip = this.skip.bind(this);
+    this.repeat = this.repeat.bind(this);
     this.updateTime = this.updateTime.bind(this);
     // this.convertDuration = this.convertDuration.bind(this);
     // this.getSongs = this.getSongs.bind(this);
@@ -140,6 +143,10 @@ class App extends React.Component {
     });
   }
 
+  repeat(song) {
+    this.setState((state) => ({ loop: !state.loop }), () => { song.loop = this.state.loop; });
+  }
+
   pauseSong(song) {
     // Set state to false, clear interval, and pause song
     this.setState({ playing: false }, () => {
@@ -163,7 +170,7 @@ class App extends React.Component {
 
   render() {
     const {
-      seeking, volume, pop, queuepop, song, playing, startTime, endTime,
+      seeking, volume, pop, queuepop, song, playing, startTime, endTime, loop,
     } = this.state;
 
     // The audio source. Will use audio properties for functionality.
@@ -186,7 +193,8 @@ class App extends React.Component {
               : <Play onClick={() => { this.playSong(sng); }} />}
             <Forward onClick={this.skip} />
             <Shuffle />
-            <Repeat />
+            {loop ? <RepeatOne onClick={() => { this.repeat(sng); }} />
+              : <Repeat onClick={() => { this.repeat(sng); }} />}
             <div className="progress">
               <Start>{startTime}</Start>
               <Progress change={this.handleChange} val={seeking} song={sng} />
@@ -253,6 +261,11 @@ const Shuffle = styled(Button)`
 
 const Repeat = styled(Button)`
   background-image: url("buttons/repeat_none.svg");
+  margin-right: 20px;
+`;
+
+const RepeatOne = styled(Button)`
+  background-image: url("buttons/repeat_one.svg");
   margin-right: 20px;
 `;
 
