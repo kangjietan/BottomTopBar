@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import axios from 'axios';
 import Queue from './Queue.jsx';
 import Progress from './Progress.jsx';
+import VolumeBar from './VolumeBar.jsx';
 import Image from './Image.jsx';
 import ArtistTitle from './ArtistTitle.jsx';
 
@@ -88,10 +89,16 @@ class App extends React.Component {
     this.setState({
       [name]: value,
     }, () => {
+      // Change song time to slider value
       if (name === 'seeking') {
         song.currentTime = (value / 100) * song.duration;
       } else if (name === 'volume') {
+        if (value > 0) {
+          this.setState({ mute: false });
+        }
+        // Change song volume to slider value
         song.volume = value / 100;
+        // Keep track of previous volume setting for when user unmutes
         this.setState({ previousVol: value });
       }
     });
@@ -107,11 +114,8 @@ class App extends React.Component {
     this.setState((state) => ({ queuepop: !state.queuepop }));
   }
 
-  // this.setState({ startTime: song.currentTime.toString() });
   playSong(song) {
     // Set state to true, start interval, and play song
-
-    // song.ontimeupdate = () => { console.log(song.currentTime); };
     this.setState({ playing: true }, () => {
       const callback = () => {
         // Constantly update startTime and slider value
@@ -131,6 +135,7 @@ class App extends React.Component {
       this.check(callback, 500);
       // play song
       song.play();
+      // Convert song duration to right format
       this.convertDuration(song.duration);
     });
   }
@@ -152,6 +157,7 @@ class App extends React.Component {
         const randomIdx = this.random();
         this.setState({ currentIdx: randomIdx, song: initial[randomIdx] });
       } else {
+        // Otherwise go back one index
         this.setState((state) => ({ currentIdx: state.currentIdx - 1 }), () => {
           this.setState({ song: initial[this.state.currentIdx] });
         });
@@ -167,6 +173,7 @@ class App extends React.Component {
       const randomIdx = this.random();
       this.setState({ currentIdx: randomIdx, song: initial[randomIdx] });
     } else {
+      // Otherwise go forward one index
       this.setState({ currentIdx: currentIdx + 1 }, () => {
         this.setState({ song: initial[this.state.currentIdx] });
       });
@@ -174,6 +181,7 @@ class App extends React.Component {
   }
 
   repeat(song) {
+    // Set song loop to true
     this.setState({ loop: true }, () => {
       const { loop } = this.state;
       song.loop = loop;
@@ -181,6 +189,9 @@ class App extends React.Component {
   }
 
   repeatAll(song) {
+    // To be implemented
+    // Loop through all the songs in the array
+    // Iterate through each song and playing them
     song.loop = false;
     this.setState({ loopAll: true });
   }
@@ -225,7 +236,7 @@ class App extends React.Component {
 
   render() {
     const {
-      seeking, volume, pop, queuepop, song, playing, startTime, endTime, loop, loopAll, shuffle, mute,
+      seeking, volume, pop, queuepop, song, playing, startTime, endTime, loop, loopAll, shuffle,
     } = this.state;
 
     // The audio source. Will use audio properties for functionality.
@@ -250,7 +261,6 @@ class App extends React.Component {
         <audio src={song.song_url} type="audio/mpeg" id="songsrc">
           <track kind="captions" />
         </audio>
-        {/* <div className="player-container"> */}
         <section className="player">
           <PlayBackbg />
           <div className="playcontrol-buttons">
@@ -259,21 +269,23 @@ class App extends React.Component {
               : <Play onClick={() => { this.playSong(sng); }} />}
             <Forward onClick={this.skip} />
             {shuffle ? <ShuffleTrue onClick={this.shuffle} /> : <Shuffle onClick={this.shuffle} />}
-            {/* Render current state of repeat */}
             {repeatButton}
             <div className="progress">
               <Start>{startTime}</Start>
               <Progress change={this.handleChange} val={seeking} song={sng} />
               <End>{endTime}</End>
             </div>
-            <div>
-              <div className="volume">
-                {volume === 0 ? <Mute onMouseEnter={this.popUpVolume} onClick={() => { this.mute(sng); }} />
-                  : <Volume onMouseEnter={this.popUpVolume} onClick={() => { this.mute(sng); }} />}
-                <div style={{ visibility: volVisibility }} className="volume-slider-container" onMouseLeave={this.popUpVolume}>
-                  <input type="range" min="0" max="100" value={volume} id="vol" name="volume" onChange={(e) => { this.handleChange(e, sng); }} />
-                </div>
-              </div>
+            <div className="volume">
+              {volume === 0
+                ? <Mute onMouseEnter={this.popUpVolume} onClick={() => { this.mute(sng); }} />
+                : <Volume onMouseEnter={this.popUpVolume} onClick={() => { this.mute(sng); }} />}
+              <VolumeBar
+                leave={this.popUpVolume}
+                val={volume}
+                change={this.handleChange}
+                song={sng}
+                visible={volVisibility}
+              />
             </div>
             <div className="song-info">
               <Image image={song.song_image} />
@@ -286,7 +298,6 @@ class App extends React.Component {
             </div>
           </div>
         </section>
-        {/* </div> */}
       </div>
     );
   }
