@@ -3,11 +3,16 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
 const ArtistTitle = ({ artist, title }) => (
-  <div className="artist-title">
+  <Container>
     <Artist>{artist}</Artist>
     <Title>{title}</Title>
-  </div>
+  </Container>
 );
+
+const Container = styled.div`
+  width: 100%;
+  flex-grow: 1;
+`;
 
 const Artist = styled.div`
   color: #999;

@@ -27,7 +27,6 @@ for (let i = 0; i < 10; i += 1) {
     fakeData.push({
       title: faker.lorem.word(),
       artist: faker.name.findName(),
-      length: 100 + i,
       song_url: `./songs/song${j}.mp3`,
       song_image: faker.image.imageUrl(30, 30),
     });
