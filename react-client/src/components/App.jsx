@@ -16,12 +16,14 @@ class App extends React.Component {
       song: '', // song url to load as audio source
       seeking: 0, // Seeking time
       volume: 100, // Volume of audio
+      previousVol: 100, // Volume that was altered
       pop: false, // Pop up the volume slider
       queuepop: false, // Pop up the queue
       playing: false, // State of the song
       shuffle: false, // Shuffle songs
       loop: false, // replay song
       loopAll: false, // replay song infinitely
+      mute: false, // set audio volume to 0
       startTime: '0:00', // Current time
       endTime: '0:00', // Duration of song
     };
@@ -37,6 +39,7 @@ class App extends React.Component {
     this.repeatAll = this.repeatAll.bind(this);
     this.repeatNone = this.repeatNone.bind(this);
     this.shuffle = this.shuffle.bind(this);
+    this.mute = this.mute.bind(this);
     this.check = (cb, wait) => {
       setInterval(cb, wait);
     };
@@ -87,6 +90,9 @@ class App extends React.Component {
     }, () => {
       if (name === 'seeking') {
         song.currentTime = (value / 100) * song.duration;
+      } else if (name === 'volume') {
+        song.volume = value / 100;
+        this.setState({ previousVol: value });
       }
     });
   }
@@ -187,6 +193,19 @@ class App extends React.Component {
     this.setState({ shuffle: true });
   }
 
+  mute(song) {
+    this.setState((state) => ({ mute: !state.mute }), () => {
+      const { mute, previousVol } = this.state;
+      if (mute) {
+        song.volume = 0;
+        this.setState({ volume: 0 });
+      } else {
+        song.volume = previousVol / 100;
+        this.setState({ volume: previousVol });
+      }
+    });
+  }
+
   // Format time in minutes:seconds -> 1:23
   updateTime(time) {
     const minutes = Math.floor(time / 60).toString();
@@ -206,7 +225,7 @@ class App extends React.Component {
 
   render() {
     const {
-      seeking, volume, pop, queuepop, song, playing, startTime, endTime, loop, loopAll, shuffle,
+      seeking, volume, pop, queuepop, song, playing, startTime, endTime, loop, loopAll, shuffle, mute,
     } = this.state;
 
     // The audio source. Will use audio properties for functionality.
@@ -249,9 +268,10 @@ class App extends React.Component {
             </div>
             <div>
               <div className="volume">
-                <Volume onMouseEnter={this.popUpVolume} />
+                {volume === 0 ? <Mute onMouseEnter={this.popUpVolume} onClick={() => { this.mute(sng); }} />
+                  : <Volume onMouseEnter={this.popUpVolume} onClick={() => { this.mute(sng); }} />}
                 <div style={{ visibility: volVisibility }} className="volume-slider-container" onMouseLeave={this.popUpVolume}>
-                  <input type="range" min="0" max="100" value={volume} id="vol" name="volume" onChange={this.handleChange} />
+                  <input type="range" min="0" max="100" value={volume} id="vol" name="volume" onChange={(e) => { this.handleChange(e, sng); }} />
                 </div>
               </div>
             </div>
@@ -327,6 +347,12 @@ const RepeatAll = styled(Button)`
 
 const Volume = styled(Button)`
   background-image: url("buttons/volume.svg");
+  padding: 10px;
+  margin-bottom: 15px;
+`;
+
+const Mute = styled(Button)`
+  background-image: url("buttons/mute.svg");
   padding: 10px;
   margin-bottom: 15px;
 `;
