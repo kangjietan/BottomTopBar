@@ -1,15 +1,27 @@
 import React from 'react';
 import styled from 'styled-components';
+import PropTypes from 'prop-types';
 
-const Queue = () => (
-  <Background>
-    <Panel>
-      <Title>Next up</Title>
-      <Clear>Clear</Clear>
-      <Exit />
-    </Panel>
-  </Background>
+const Queue = ({ visible }) => (
+  <QueueContainer style={{ visibility: visible }}>
+    <Background>
+      <Panel>
+        <Title>Next up</Title>
+        <Clear>Clear</Clear>
+        <Exit />
+      </Panel>
+    </Background>
+  </QueueContainer>
 );
+
+const QueueContainer = styled.div`
+  position: absolute;
+  bottom: 54px;
+  right: 8px;
+  width: 480px;
+  height: 660px;
+  max-height: calc(100vh - 120px);
+`;
 
 const Background = styled.div`
   height: 100%;
@@ -71,5 +83,9 @@ const Exit = styled.button`
   padding-bottom: 3px;
   cursor: pointer;
 `;
+
+Queue.propTypes = {
+  visible: PropTypes.string.isRequired,
+};
 
 export default Queue;

@@ -14,7 +14,7 @@ class App extends React.Component {
     this.state = {
       initial: [], // Initial load of songs
       currentIdx: 0, // Current song in array
-      song: '', // song url to load as audio source
+      song: {}, // song with properties of url, image, title, artist,
       seeking: 0, // Seeking time
       volume: 100, // Volume of audio
       previousVol: 100, // Volume that was altered
@@ -257,25 +257,25 @@ class App extends React.Component {
     }
 
     return (
-      <div className="playback-bar">
+      <PlayBackContainer>
         <audio src={song.song_url} type="audio/mpeg" id="songsrc">
           <track kind="captions" />
         </audio>
         <section className="player">
           <PlayBackbg />
-          <div className="playcontrol-buttons">
+          <ButtonsContainer>
             <Back onClick={this.goBack} />
             {playing ? <Pause onClick={() => { this.pauseSong(sng); }} />
               : <Play onClick={() => { this.playSong(sng); }} />}
             <Forward onClick={this.skip} />
             {shuffle ? <ShuffleTrue onClick={this.shuffle} /> : <Shuffle onClick={this.shuffle} />}
             {repeatButton}
-            <div className="progress">
+            <ProgressContainer>
               <Start>{startTime}</Start>
               <Progress change={this.handleChange} val={seeking} song={sng} />
               <End>{endTime}</End>
-            </div>
-            <div className="volume">
+            </ProgressContainer>
+            <VolumeContainer>
               {volume === 0
                 ? <Mute onMouseEnter={this.popUpVolume} onClick={() => { this.mute(sng); }} />
                 : <Volume onMouseEnter={this.popUpVolume} onClick={() => { this.mute(sng); }} />}
@@ -286,19 +286,17 @@ class App extends React.Component {
                 song={sng}
                 visible={volVisibility}
               />
-            </div>
-            <div className="song-info">
+            </VolumeContainer>
+            <SongInfoContainer>
               <Image image={song.song_image} />
               <ArtistTitle artist={song.artist} title={song.title} />
               <Heart />
-              <Queueb onClick={this.popUpQueue} />
-            </div>
-            <div style={{ visibility: queueVisibility }} className="queue-container">
-              <Queue />
-            </div>
-          </div>
+              <Queuebutton onClick={this.popUpQueue} />
+            </SongInfoContainer>
+            <Queue visible={queueVisibility} />
+          </ButtonsContainer>
         </section>
-      </div>
+      </PlayBackContainer>
     );
   }
 }
@@ -372,7 +370,7 @@ const Heart = styled(Button)`
   background-image: url("buttons/heart.svg");
 `;
 
-const Queueb = styled(Button)`
+const Queuebutton = styled(Button)`
   background-image: url("buttons/queue.svg");
 `;
 
@@ -402,6 +400,48 @@ const PlayBackbg = styled.div`
   display: block;
   width: 100%;
   height: 100%;
+`;
+
+// Containers
+
+const PlayBackContainer = styled.div`
+  height: 48px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  visibility: hidden;
+  position: fixed;
+  margin: auto;
+`;
+
+const ButtonsContainer = styled.div`
+  display: flex;
+  height: 100%;
+  position: absolute;
+  z-index: 10;
+  border-top: 1px solid #cecece;
+  justify-content: space-around;
+`;
+
+const VolumeContainer = styled.div`
+  visibility: visible;
+  height: 100%;
+  display: flex;
+  margin-right: 12px;
+`;
+
+const SongInfoContainer = styled.div`
+  visibility: visible;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 360px;
+`;
+
+const ProgressContainer = styled.div`
+  visibility: visible;
+  display: flex;
 `;
 
 export default App;
