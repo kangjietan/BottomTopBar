@@ -16,13 +16,16 @@ class App extends React.Component {
       song: '', // song url to load as audio source
       seeking: 0, // Seeking time
       volume: 100, // Volume of audio
+      previousVol: 100, // Volume that was altered
       pop: false, // Pop up the volume slider
       queuepop: false, // Pop up the queue
       playing: false, // State of the song
       shuffle: false, // Shuffle songs
       loop: false, // replay song
+      loopAll: false, // replay song infinitely
+      mute: false, // set audio volume to 0
       startTime: '0:00', // Current time
-      endTime: '1:23', // Duration of song
+      endTime: '0:00', // Duration of song
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -33,11 +36,18 @@ class App extends React.Component {
     this.goBack = this.goBack.bind(this);
     this.skip = this.skip.bind(this);
     this.repeat = this.repeat.bind(this);
-    this.updateTime = this.updateTime.bind(this);
-    // this.convertDuration = this.convertDuration.bind(this);
-    // this.getSongs = this.getSongs.bind(this);
+    this.repeatAll = this.repeatAll.bind(this);
+    this.repeatNone = this.repeatNone.bind(this);
+    this.shuffle = this.shuffle.bind(this);
+    this.mute = this.mute.bind(this);
     this.check = (cb, wait) => {
       setInterval(cb, wait);
+    };
+    this.random = () => {
+      // Idx between 0 and initial array length
+      const { initial } = this.state;
+      const randomIdx = Math.floor(Math.random() * initial.length);
+      return randomIdx;
     };
   }
 
@@ -54,16 +64,6 @@ class App extends React.Component {
     // User interacts with songs that are already stored on the app
     // When they play/pause, skip, go back, etc...
     this.getSongs();
-    // axios.get('http://localhost:3000/initial')
-    //   .then((res) => {
-    //     // console.log(res);
-    //     this.setState({
-    //       initial: res.data,
-    //     }, () => { this.setState({ song: res.data[0] }); });
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
   }
 
   getSongs() {
@@ -72,7 +72,10 @@ class App extends React.Component {
         // console.log(res);
         this.setState({
           initial: res.data,
-        }, () => { this.setState({ song: this.state.initial[0] }); });
+        }, () => {
+          const { initial, currentIdx } = this.state;
+          this.setState({ song: initial[currentIdx] });
+        });
       })
       .catch((err) => {
         console.log(err);
@@ -87,6 +90,9 @@ class App extends React.Component {
     }, () => {
       if (name === 'seeking') {
         song.currentTime = (value / 100) * song.duration;
+      } else if (name === 'volume') {
+        song.volume = value / 100;
+        this.setState({ previousVol: value });
       }
     });
   }
@@ -106,45 +112,27 @@ class App extends React.Component {
     // Set state to true, start interval, and play song
 
     // song.ontimeupdate = () => { console.log(song.currentTime); };
-    this.setState({ playing: true, endTime: song.duration }, () => {
+    this.setState({ playing: true }, () => {
       const callback = () => {
+        // Constantly update startTime and slider value
         const currentSeeking = (song.currentTime / song.duration) * 100;
         const currentStartTime = Math.floor(song.currentTime);
+
         song.ontimeupdate = () => {
-          this.setState({ seeking: currentSeeking });
+          this.setState({ seeking: currentSeeking }, () => {
+            if (song.ended) {
+              this.setState({ playing: false });
+            }
+          });
           this.updateTime(currentStartTime);
         };
       };
+      // Set up interval to constantly update startTime and progress bar
       this.check(callback, 500);
+      // play song
       song.play();
+      this.convertDuration(song.duration);
     });
-  }
-
-  goBack() {
-    // Go back one from current index
-    const { currentIdx, initial } = this.state;
-    // console.log('Outside goBack', currentIdx);
-    if (currentIdx !== 0) {
-      this.setState((state) => ({ currentIdx: state.currentIdx - 1 }), () => {
-        this.setState({ song: initial[this.state.currentIdx] });
-      });
-    }
-  }
-
-  skip() {
-    // Go forward one from current index
-    const { initial, currentIdx } = this.state;
-    // console.log('Outside skip', currentIdx, song);
-    // this.setState((state) => ({ currentIdx: state.currentIdx + 1 }), () => {
-    //   this.setState({ song: initial[currentIdx] }, () => { console.log(currentIdx); });
-    // });
-    this.setState({ currentIdx: currentIdx + 1 }, () => {
-      this.setState({ song: initial[this.state.currentIdx] });
-    });
-  }
-
-  repeat(song) {
-    this.setState((state) => ({ loop: !state.loop }), () => { song.loop = this.state.loop; });
   }
 
   pauseSong(song) {
@@ -152,6 +140,69 @@ class App extends React.Component {
     this.setState({ playing: false }, () => {
       clearInterval(this.check);
       song.pause();
+    });
+  }
+
+  goBack() {
+    // Go back one from current index
+    const { currentIdx, initial, shuffle } = this.state;
+    if (currentIdx !== 0) {
+      // If shuffle is true, generate random idx
+      if (shuffle) {
+        const randomIdx = this.random();
+        this.setState({ currentIdx: randomIdx, song: initial[randomIdx] });
+      } else {
+        this.setState((state) => ({ currentIdx: state.currentIdx - 1 }), () => {
+          this.setState({ song: initial[this.state.currentIdx] });
+        });
+      }
+    }
+  }
+
+  skip() {
+    // Go forward one from current index
+    const { initial, currentIdx, shuffle } = this.state;
+    // If shuffle is true, generate random idx
+    if (shuffle) {
+      const randomIdx = this.random();
+      this.setState({ currentIdx: randomIdx, song: initial[randomIdx] });
+    } else {
+      this.setState({ currentIdx: currentIdx + 1 }, () => {
+        this.setState({ song: initial[this.state.currentIdx] });
+      });
+    }
+  }
+
+  repeat(song) {
+    this.setState({ loop: true }, () => {
+      const { loop } = this.state;
+      song.loop = loop;
+    });
+  }
+
+  repeatAll(song) {
+    song.loop = false;
+    this.setState({ loopAll: true });
+  }
+
+  repeatNone() {
+    this.setState({ loop: false, loopAll: false });
+  }
+
+  shuffle() {
+    this.setState({ shuffle: true });
+  }
+
+  mute(song) {
+    this.setState((state) => ({ mute: !state.mute }), () => {
+      const { mute, previousVol } = this.state;
+      if (mute) {
+        song.volume = 0;
+        this.setState({ volume: 0 });
+      } else {
+        song.volume = previousVol / 100;
+        this.setState({ volume: previousVol });
+      }
     });
   }
 
@@ -164,20 +215,35 @@ class App extends React.Component {
     this.setState({ startTime: displayTime });
   }
 
-  // convertDuration(time) {
-
-  // }
+  convertDuration(time) {
+    const minutes = Math.floor(time / 60).toString();
+    let seconds = Math.floor(time % 60);
+    seconds = seconds < 10 ? `:0${seconds}` : `:${seconds}`;
+    const displayTime = minutes + seconds;
+    this.setState({ endTime: displayTime });
+  }
 
   render() {
     const {
-      seeking, volume, pop, queuepop, song, playing, startTime, endTime, loop,
+      seeking, volume, pop, queuepop, song, playing, startTime, endTime, loop, loopAll, shuffle, mute,
     } = this.state;
 
     // The audio source. Will use audio properties for functionality.
     const sng = document.getElementById('songsrc');
 
+    // Pop up volume and queue
     const volVisibility = pop ? 'visible' : 'hidden';
     const queueVisibility = queuepop ? 'visible' : 'hidden';
+
+    // Repeat button
+    let repeatButton;
+    if (loopAll && loop) {
+      repeatButton = <RepeatAll onClick={this.repeatNone} />;
+    } else if (loop) {
+      repeatButton = <RepeatOne onClick={() => { this.repeatAll(sng); }} />;
+    } else {
+      repeatButton = <Repeat onClick={() => { this.repeat(sng); }} />;
+    }
 
     return (
       <div className="playback-bar">
@@ -192,9 +258,9 @@ class App extends React.Component {
             {playing ? <Pause onClick={() => { this.pauseSong(sng); }} />
               : <Play onClick={() => { this.playSong(sng); }} />}
             <Forward onClick={this.skip} />
-            <Shuffle />
-            {loop ? <RepeatOne onClick={() => { this.repeat(sng); }} />
-              : <Repeat onClick={() => { this.repeat(sng); }} />}
+            {shuffle ? <ShuffleTrue onClick={this.shuffle} /> : <Shuffle onClick={this.shuffle} />}
+            {/* Render current state of repeat */}
+            {repeatButton}
             <div className="progress">
               <Start>{startTime}</Start>
               <Progress change={this.handleChange} val={seeking} song={sng} />
@@ -202,9 +268,10 @@ class App extends React.Component {
             </div>
             <div>
               <div className="volume">
-                <Volume onMouseEnter={this.popUpVolume} />
+                {volume === 0 ? <Mute onMouseEnter={this.popUpVolume} onClick={() => { this.mute(sng); }} />
+                  : <Volume onMouseEnter={this.popUpVolume} onClick={() => { this.mute(sng); }} />}
                 <div style={{ visibility: volVisibility }} className="volume-slider-container" onMouseLeave={this.popUpVolume}>
-                  <input type="range" min="0" max="100" value={volume} id="vol" name="volume" onChange={this.handleChange} />
+                  <input type="range" min="0" max="100" value={volume} id="vol" name="volume" onChange={(e) => { this.handleChange(e, sng); }} />
                 </div>
               </div>
             </div>
@@ -259,6 +326,10 @@ const Shuffle = styled(Button)`
   background-image: url("buttons/shuffle_black.svg");
 `;
 
+const ShuffleTrue = styled(Button)`
+  background-image: url("buttons/shuffle_orange.svg");
+`;
+
 const Repeat = styled(Button)`
   background-image: url("buttons/repeat_none.svg");
   margin-right: 20px;
@@ -269,8 +340,19 @@ const RepeatOne = styled(Button)`
   margin-right: 20px;
 `;
 
+const RepeatAll = styled(Button)`
+  background-image: url("buttons/repeat.svg");
+  margin-right: 20px;
+`;
+
 const Volume = styled(Button)`
   background-image: url("buttons/volume.svg");
+  padding: 10px;
+  margin-bottom: 15px;
+`;
+
+const Mute = styled(Button)`
+  background-image: url("buttons/mute.svg");
   padding: 10px;
   margin-bottom: 15px;
 `;
@@ -296,7 +378,7 @@ const Start = styled(Time)`
 `;
 
 const End = styled(Time)`
-  text-align; left;
+  text-align: left;
   color: #333;
 `;
 
