@@ -201,7 +201,7 @@ class App extends React.Component {
   }
 
   shuffle() {
-    this.setState({ shuffle: true });
+    this.setState((state) => ({ shuffle: !state.shuffle }));
   }
 
   mute(song) {

@@ -12,6 +12,7 @@ const Progress = ({
 Progress.propTypes = {
   val: PropTypes.number.isRequired,
   change: PropTypes.func.isRequired,
+  song: PropTypes.instanceOf(Element).isRequired,
 };
 
 export default Progress;
