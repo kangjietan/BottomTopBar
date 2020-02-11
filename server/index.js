@@ -1,5 +1,7 @@
 const express = require('express');
 
+const cors = require('cors');
+
 const path = require('path');
 
 const db = require('../database/index.js');
@@ -7,6 +9,8 @@ const db = require('../database/index.js');
 const app = express();
 
 const PORT = 3000;
+
+app.use(cors());
 
 app.use(express.static(path.join(__dirname, '../public')));
 
@@ -22,6 +26,10 @@ app.get('/initial', (req, res) => {
   };
 
   db.getInitial(callback);
+});
+
+app.get('/app.js', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/bundle.js'));
 });
 
 // module.exports = app;
